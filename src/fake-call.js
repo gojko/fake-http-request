@@ -1,5 +1,5 @@
 /*global module */
-module.exports = function FakeCall(callArgs, listeners) {
+module.exports = function FakeCall(callArgs, listeners, requestBodyBuffer) {
 	'use strict';
 	var self = this;
 	self.args = callArgs;
@@ -23,6 +23,7 @@ module.exports = function FakeCall(callArgs, listeners) {
 			responseListeners.end();
 		}
 	};
+	self.body = requestBodyBuffer;
 	self.networkError = function (err) {
 		if (listeners.error) {
 			listeners.error(err);

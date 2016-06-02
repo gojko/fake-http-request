@@ -7,6 +7,7 @@ describe('createFakeRequest', function () {
 			result = request({method: 'GET', body: 'XXX'});
 		expect(typeof result.on).toEqual('function');
 		expect(typeof result.end).toEqual('function');
+		expect(typeof result.write).toEqual('function');
 	});
 	it('records calls', function () {
 		var request = createFakeRequest();
@@ -17,6 +18,16 @@ describe('createFakeRequest', function () {
 		expect(request.calls.length).toEqual(2);
 		expect(request.calls[0].args).toEqual([{method: 'GET', body: 'XXX'}]);
 		expect(request.calls[1].args).toEqual([{method: 'POST', host: 'yyy'}]);
+
+	});
+	it('records body write', function () {
+		var request = createFakeRequest(),
+			reqObj;
+
+		reqObj = request({});
+		reqObj.write('bla bla');
+		reqObj.write('hahaha');
+		expect(request.calls[0].body).toEqual(['bla bla', 'hahaha']);
 
 	});
 	it('can set up response event listeners', function () {

@@ -2,10 +2,11 @@
 var FakeCall = require('../src/fake-call');
 describe('FakeCall', function () {
 	'use strict';
-	var requestListeners, underTest;
+	var requestListeners, underTest, bodyBuffer;
 	beforeEach(function () {
 		requestListeners = jasmine.createSpyObj('request', ['response', 'error']);
-		underTest = new FakeCall(['a'], requestListeners);
+		bodyBuffer = [];
+		underTest = new FakeCall(['a'], requestListeners, bodyBuffer);
 	});
 	it('records the call args', function () {
 		expect(underTest.args).toEqual(['a']);
@@ -18,6 +19,13 @@ describe('FakeCall', function () {
 		it('calls the error listener if it is provided', function () {
 			underTest.networkError('x');
 			expect(requestListeners.error).toHaveBeenCalledWith('x');
+		});
+	});
+	describe('body', function () {
+		it('retrieves the contents of the body buffer', function () {
+			bodyBuffer.push('a');
+			bodyBuffer.push('b');
+			expect(underTest.body).toEqual(['a','b']);
 		});
 	});
 	describe('respond', function () {

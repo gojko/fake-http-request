@@ -33,6 +33,7 @@ Both `install` and `uninstall` can take an argument -- the module name where to 
 You can then use `https.request.calls` to inspect individual calls. Each call object will have the following structure:
 
 * `args`: `array` -- arguments passed to the request
+* `body`: `array` -- chunks written to the request body
 * `networkError`: `function (error)` -- use this to simulate a network error for the call.
 * `respond`: `function(httpCode, statusMessage, body)` -- use this to simulate a successful network response.
 

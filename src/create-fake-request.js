@@ -7,6 +7,7 @@ module.exports = function createFakeRequest() {
 		result = function () {
 			var argsArray = [].slice.apply(arguments),
 			listeners = {},
+			bodyBuffer = [],
 			fake = {
 				on: function (eventName, listener) {
 					listeners[eventName] = listener;
@@ -14,9 +15,16 @@ module.exports = function createFakeRequest() {
 				},
 				end: function () {
 					return fake;
+				},
+				write: function (content, encoding, callback) {
+					bodyBuffer.push(content);
+					if (callback) {
+						callback();
+					}
+					return fake;
 				}
 			};
-			calls.push(new FakeCall(argsArray, listeners));
+			calls.push(new FakeCall(argsArray, listeners, bodyBuffer));
 			return fake;
 		};
 	result.calls = calls;
