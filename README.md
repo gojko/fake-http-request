@@ -26,7 +26,7 @@ To clean up and restore the original HTTP/S requests, after testing, use:
 fake.uninstall('https');
 ```
 
-This will replace the system `http.request` with a test method that captures calls instead of sending them out to the network, so it will work with any client code that uses the system http/https libraries.
+This will replace the system `https.request` with a test method that captures calls instead of sending them out to the network, so it will work with any client code that uses the system http/https libraries.
 
 Both `install` and `uninstall` can take an argument -- the module name where to install the fake requests. By default, they will use `https`.
 
