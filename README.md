@@ -1,6 +1,6 @@
 # Fake Node.js HTTP Request 
 
-Utility class to fake a HTTP/HTTPS request for unit testing Node.js projects. It captures arguments for outgoing requests and allows you to simulate network errors and responses easily.
+Utility class to fake a HTTP/HTTPS request for unit testing Node.js projects. It captures arguments for outgoing requests and allows you to simulate network errors and responses easily. It can also pipe outgoing HTTP/S requests to custom functions, so you can asynchronously wait for them.
 
 ## Installation
 
@@ -37,6 +37,8 @@ You can then use `https.request.calls` to inspect individual calls. Each call ob
 * `networkError`: `function (error)` -- use this to simulate a network error for the call.
 * `respond`: `function(httpCode, statusMessage, body)` -- use this to simulate a successful network response.
 
+You can also use `https.request.pipe` to pass in a function that will receive a call every time a network request is initiated.
+
 ### Example
 
 ```javascript
@@ -46,24 +48,46 @@ var fakeRequest = require('fake-http-request'),
 
 fakeRequest.install();
 
+// simulate a response
+
 request('https://www.google.com', function (error, response, body) { 
   console.log('got response', response.statusCode, response.statusMessage, body) 
 }).on('request', function () {
   console.log('number of calls', https.request.calls.length);
-  console.log('first call', https.request.calls[0].args[0].host, https.request.calls[0].args[0].port, https.request.calls[0].args[0].path);
-  // simulate a response
+  console.log('first call', 
+	https.request.calls[0].args[0].host, 
+	https.request.calls[0].args[0].port, 
+	https.request.calls[0].args[0].path
+  );
+
   https.request.calls[0].respond(404, 'Not found', 'some html here');
 });
 
+// simulate errors
 
 call = request('https://www.google.com', function (error, response, body) { 
   console.log('got error', error); 
 }).on('request', function () {
   var mostRecent = https.request.calls.length - 1;
   console.log('number of calls', https.request.calls.length);
-  console.log('second call', https.request.calls[mostRecent].args[0].host, https.request.calls[mostRecent].args[0].port, https.request.calls[mostRecent].args[0].path);
-  // simulate a response
+  console.log('second call', 
+    https.request.calls[mostRecent].args[0].host,
+	https.request.calls[mostRecent].args[0].port, 
+	https.request.calls[mostRecent].args[0].path
+  );
   https.request.calls[mostRecent].networkError('BOOM!');
 });
+
+// pipe calls for async processing
+
+https.request.pipe(function (options) {
+  console.log('Received call',  
+    https.request.calls[0].args[0].host, 
+	https.request.calls[0].args[0].port, 
+	https.request.calls[0].args[0].path
+  );
+});
+
+request('https://www.google.com');
 
 ```

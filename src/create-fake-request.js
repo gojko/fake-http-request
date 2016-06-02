@@ -4,6 +4,7 @@ var FakeCall = require('./fake-call');
 module.exports = function createFakeRequest() {
 	'use strict';
 	var calls = [],
+		pipes = [],
 		result = function () {
 			var argsArray = [].slice.apply(arguments),
 			listeners = {},
@@ -25,8 +26,14 @@ module.exports = function createFakeRequest() {
 				}
 			};
 			calls.push(new FakeCall(argsArray, listeners, bodyBuffer));
+			pipes.forEach(function (pipe) {
+				pipe.apply({}, argsArray);
+			});
 			return fake;
 		};
 	result.calls = calls;
+	result.pipe = function (f) {
+		pipes.push(f);
+	};
 	return result;
 };

@@ -1,4 +1,4 @@
-/*global describe, it, expect, require */
+/*global describe, it, expect, require, jasmine */
 var createFakeRequest = require('../src/create-fake-request');
 describe('createFakeRequest', function () {
 	'use strict';
@@ -29,6 +29,21 @@ describe('createFakeRequest', function () {
 		reqObj.write('hahaha');
 		expect(request.calls[0].body).toEqual(['bla bla', 'hahaha']);
 
+	});
+	it('pipes calls to listeners', function () {
+		var request = createFakeRequest(),
+			spy1 = jasmine.createSpy('pipe1'),
+			spy2 = jasmine.createSpy('pipe2');
+		request.pipe(spy1);
+		request({method: 'GET', body: 'XXX'});
+		request.pipe(spy2);
+		request({method: 'POST', host: 'yyy'});
+
+		expect(spy1).toHaveBeenCalledWith({method: 'GET', body: 'XXX'});
+		expect(spy1).toHaveBeenCalledWith({method: 'POST', host: 'yyy'});
+		expect(spy2).toHaveBeenCalledWith({method: 'POST', host: 'yyy'});
+		expect(spy1.calls.count()).toEqual(2);
+		expect(spy2.calls.count()).toEqual(1);
 	});
 	it('can set up response event listeners', function () {
 		var request = createFakeRequest(),
@@ -71,5 +86,4 @@ describe('createFakeRequest', function () {
 		result = reqObj.on('data', function () {}).end();
 		expect(result).toBe(reqObj);
 	});
-
 });
