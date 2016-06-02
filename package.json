@@ -1,0 +1,30 @@
+{
+  "name": "fake-http-request",
+  "version": "1.0.0",
+  "description": "Fake HTTP/HTTPS request interface that makes it easy to write unit tests that capture/mock outgoing network requests",
+  "scripts": {
+    "test": "node spec/support/jasmine-runner.js"
+  },
+  "main": "index.js",
+  "keywords": [
+    "http",
+    "https",
+    "request",
+    "post",
+    "rest",
+    "unit testing",
+    "mock"
+  ],
+  "homepage": "https://github.com/gojko/fake-http-request",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gojko/fake-http-request"
+  },
+  "author": "Gojko Adzic <gojko@gojko.com> http://gojko.net",
+  "license": "MIT",
+  "devDependencies": {
+    "jasmine": "^2.4.1",
+    "jasmine-spec-reporter": "^2.4.0",
+    "request": "^2.72.0"
+  }
+}
