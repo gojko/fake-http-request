@@ -37,7 +37,7 @@ You can then use `https.request.calls` to inspect individual calls. Each call ob
 * `networkError`: `function (error)` -- use this to simulate a network error for the call.
 * `respond`: `function(httpCode, statusMessage, body)` -- use this to simulate a successful network response.
 
-You can also use `https.request.pipe` to pass in a function that will receive a call every time a network request is initiated.
+You can also use `https.request.pipe` to pass in a function that will receive a call every time a network request is initiated. The call is executed using `setTimeout` so you can also respond, knowing that the synchronous processing of the calling function is complete. The arguments to the pipe will be the arguments passed to the HTTP call, and `this` will be set to the fake request. 
 
 ### Example
 
@@ -81,11 +81,8 @@ call = request('https://www.google.com', function (error, response, body) {
 // pipe calls for async processing
 
 https.request.pipe(function (options) {
-  console.log('Received call',  
-    https.request.calls[0].args[0].host, 
-	https.request.calls[0].args[0].port, 
-	https.request.calls[0].args[0].path
-  );
+  console.log('Received call', options); 
+  this.respond(200, 'OK', 'some html here');
 });
 
 request('https://www.google.com');
