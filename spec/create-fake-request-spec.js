@@ -1,5 +1,6 @@
-/*global describe, it, expect, require, jasmine */
-var createFakeRequest = require('../src/create-fake-request');
+/*global describe, it, expect, require, jasmine, beforeEach, afterEach */
+var createFakeRequest = require('../src/create-fake-request'),
+	FakeCall = require('../src/fake-call');
 describe('createFakeRequest', function () {
 	'use strict';
 	it('returns a function that creates objects with the HTTP request interface', function () {
@@ -30,21 +31,50 @@ describe('createFakeRequest', function () {
 		expect(request.calls[0].body).toEqual(['bla bla', 'hahaha']);
 
 	});
-	it('pipes calls to listeners', function () {
-		var request = createFakeRequest(),
-			spy1 = jasmine.createSpy('pipe1'),
+	describe('piping calls', function () {
+		var request, spy1, spy2;
+		beforeEach(function () {
+			jasmine.clock().install();
+			request = createFakeRequest();
+			spy1 = jasmine.createSpy('pipe1');
 			spy2 = jasmine.createSpy('pipe2');
-		request.pipe(spy1);
-		request({method: 'GET', body: 'XXX'});
-		request.pipe(spy2);
-		request({method: 'POST', host: 'yyy'});
+		});
+		afterEach(function () {
+			jasmine.clock().uninstall();
+		});
+		it('does not pipe calls to listeners before timeout', function () {
+			request.pipe(spy1);
+			request.pipe(spy2);
+			request({method: 'GET', body: 'XXX'});
+			expect(spy1).not.toHaveBeenCalled();
+			expect(spy2).not.toHaveBeenCalled();
+		});
+		it('pipes calls to listeners after timeout', function () {
+			request.pipe(spy1);
+			request.pipe(spy2);
+			request({method: 'POST', host: 'yyy'});
+			request({method: 'GET', body: 'XXX'});
 
-		expect(spy1).toHaveBeenCalledWith({method: 'GET', body: 'XXX'});
-		expect(spy1).toHaveBeenCalledWith({method: 'POST', host: 'yyy'});
-		expect(spy2).toHaveBeenCalledWith({method: 'POST', host: 'yyy'});
-		expect(spy1.calls.count()).toEqual(2);
-		expect(spy2.calls.count()).toEqual(1);
+			jasmine.clock().tick(2);
+			expect(spy1).toHaveBeenCalledWith({method: 'GET', body: 'XXX'});
+			expect(spy1).toHaveBeenCalledWith({method: 'POST', host: 'yyy'});
+			expect(spy2).toHaveBeenCalledWith({method: 'GET', body: 'XXX'});
+			expect(spy2).toHaveBeenCalledWith({method: 'POST', host: 'yyy'});
+			expect(spy1.calls.count()).toEqual(2);
+			expect(spy2.calls.count()).toEqual(2);
+		});
+		it('sets this to be the fake call for piping', function (done) {
+			request.pipe(function (args) {
+				expect(this).toEqual(jasmine.any(FakeCall));
+				expect(args).toEqual(this.args[0]);
+				done();
+			});
+			request({method: 'POST', host: 'yyy'});
+			jasmine.clock().tick(2);
+		});
 	});
+
+
 	it('can set up response event listeners', function () {
 		var request = createFakeRequest(),
 			reqObj,
