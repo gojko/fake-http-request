@@ -1,12 +1,17 @@
 # Fake Node.js HTTP Request 
 
+[![Build status](https://travis-ci.org/gojko/fake-http-request.svg?v=1)](https://travis-ci.org/gojko/fake-http-request) 
+
 Utility class to fake a HTTP/HTTPS request for unit testing Node.js projects. It captures arguments for outgoing requests and allows you to simulate network errors and responses easily. It can also pipe outgoing HTTP/S requests to custom functions, so you can asynchronously wait for them.
+
+[![NPM](https://nodei.co/npm/fake-http-request.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/fake-http-request/)`
 
 ## Installation
 
+Install using NPM, with 
 
 ```
-npm install fake-http-request
+npm install fake-http-request -D
 ```
 
 ## Usage
