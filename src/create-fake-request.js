@@ -14,6 +14,10 @@ module.exports = function createFakeRequest() {
 						listeners[eventName] = listener;
 						return fake;
 					},
+					once: function (eventName, listener) {
+						listeners[eventName] = listener;
+						return fake;
+					},
 					end: function () {
 						return fake;
 					},
