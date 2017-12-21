@@ -43,10 +43,24 @@ describe('example using a third party library', function () {
 		}).on('response', done.fail);
 	});
 	it('can fake only the requests matched with matcher if provided', function (done) {
-		request('https://www.github.com').on('request', function () {
-			expect(https.request.calls).not.toBeDefined();
-			expect(https.request.pipe).not.toBeDefined();
+		var numOfHttpRequests = https.request.calls.length;
+		request('https://www.github.com', function() {
+			expect(https.request.calls.length).toBe(numOfHttpRequests);
 			done();
 		}).on('error', done.fail);
-	})
+	});
+	it('fakes only the requests it can match', function (done) {
+		request('https://www.google.com', function() {
+			expect(https.request.calls.length).toBe(1);
+			request('https://www.npmjs.com', function () {
+				expect(https.request.calls.length).toBe(1);
+				done();
+			});
+		}).on('request', function () {
+			var numOfHttpRequests = https.request.calls.length
+			numOfHttpRequests &&
+				typeof https.request.calls[numOfHttpRequests - 1].respond === 'function' &&
+				https.request.calls[numOfHttpRequests - 1].respond(200, 'OK', 'Hello there');
+		}).on('error', done.fail);
+	});
 });

@@ -7,8 +7,6 @@ module.exports = function createFakeRequest(matcher, passthrough) {
 		pipes = [],
 		result = function (request) {
 			if (matcher && !matcher.test(request.href)) {
-				delete result.calls;
-				delete result.pipe;
 				return passthrough.apply(this, arguments);
 			}
 			var argsArray = [].slice.apply(arguments),
