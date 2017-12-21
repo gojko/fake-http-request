@@ -91,5 +91,23 @@ https.request.pipe(function (options) {
 });
 
 request('https://www.google.com');
+```
 
+### Usage with domain matchers
+
+In case you want to block just a certain URLs, you can pass an object with request type (`type`) and regex matcher to the `install` method. If matcher is not provided, `fake-http-request` will match all URLs. Request type is optional and it defaults to `https`.
+
+For example, this will fake only requests made to Github URL via HTTPS:
+
+```javascript
+var fakeRequest = require('fake-http-request');
+
+fakeRequest.install({
+  type: 'https',
+  matcher: /github/
+});
+
+// Do something with fake requests
+
+fakeRequest.uninstall('https');
 ```
