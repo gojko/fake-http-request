@@ -1,16 +1,23 @@
 /*global module, require, setTimeout */
 var FakeCall = require('./fake-call');
 
-module.exports = function createFakeRequest() {
+module.exports = function createFakeRequest(matcher, passthrough) {
 	'use strict';
 	var calls = [],
 		pipes = [],
-		result = function () {
+		result = function (request) {
+			if (matcher && !matcher.test(request.href)) {
+				return passthrough.apply(this, arguments);
+			}
 			var argsArray = [].slice.apply(arguments),
 				listeners = {},
 				bodyBuffer = [],
 				fake = {
 					on: function (eventName, listener) {
+						listeners[eventName] = listener;
+						return fake;
+					},
+					once: function (eventName, listener) {
 						listeners[eventName] = listener;
 						return fake;
 					},

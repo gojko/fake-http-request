@@ -10,6 +10,9 @@ module.exports = function FakeCall(callArgs, listeners, requestBodyBuffer) {
 			on: function (eventName, listener) {
 				responseListeners[eventName] = listener;
 			},
+			once: function (eventName, listener) {
+				responseListeners[eventName] = listener;
+			},
 			statusCode: statusCode,
 			statusMessage: statusMessage
 		};

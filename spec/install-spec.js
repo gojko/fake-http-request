@@ -27,6 +27,14 @@ describe('index module', function () {
 			expect(originalHttpsRequest).toBe(https.request);
 			fakeRequest.uninstall('http');
 		});
+		it('can receive config as an object', function () {
+			fakeRequest.install({
+				type: 'http'
+			});
+			expect(originalHttpRequest).not.toBe(http.request);
+			expect(originalHttpsRequest).toBe(https.request);
+			fakeRequest.uninstall('http');
+		})
 		it('refuses to install twice', function () {
 			fakeRequest.install();
 			expect(function () {
